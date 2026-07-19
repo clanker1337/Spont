@@ -11,3 +11,7 @@ vite.config.*.ts.timestamp-*
 /.playwright/
 *.log
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
