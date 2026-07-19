@@ -1,0 +1,7 @@
+# Default reviewers for Spont
+*       @clanker1337
+
+# Architecture and provider contracts need lead review
+/docs/adr/            @clanker1337
+/src/lib/providers/   @clanker1337
+/src/lib/engine/      @clanker1337

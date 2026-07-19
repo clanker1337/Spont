@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Check formatting
+        run: npm run format -- --check
+      - name: Lint
+        run: npm run lint
+      - name: Type check
+        run: npm run check
+      - name: Unit and integration tests
+        run: npm run test -- --run
+      - name: Build
+        run: npm run build
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: Playwright smoke tests
+        run: npm run test:e2e
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secret scan (basic)
+        run: |
+          # Fail if obvious secrets are committed.
+          if git grep -nEi '(api_key|apikey|secret|token|password)\s*=\s*["'"'"'][A-Za-z0-9_\-]{20,}["'"'"']' -- './*' ':!.github/workflows/*' | grep -v 'example'; then
+            echo "Potential secret committed. Remove it before merging."
+            exit 1
+          fi
+          echo "Basic secret scan passed."

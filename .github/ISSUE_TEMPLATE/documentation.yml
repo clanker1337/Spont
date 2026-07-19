@@ -1,0 +1,22 @@
+name: Documentation
+description: Documentation, runbook, ADR, or wording change
+title: "docs: "
+labels: ["type:documentation"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs documenting
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+    validations:
+      required: true
+  - type: input
+    id: milestone
+    attributes:
+      label: Milestone
+      placeholder: M0

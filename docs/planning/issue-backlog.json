@@ -1,0 +1,1107 @@
+{
+  "labels": [
+    "type:feature",
+    "type:bug",
+    "type:documentation",
+    "type:test",
+    "type:refactor",
+    "type:infrastructure",
+    "area:frontend",
+    "area:domain",
+    "area:engine",
+    "area:providers",
+    "area:security",
+    "area:testing",
+    "provider:google",
+    "provider:open-meteo",
+    "provider:mapbox",
+    "provider:ticketmaster",
+    "priority:p0",
+    "priority:p1",
+    "priority:p2",
+    "priority:p3",
+    "status:blocked",
+    "good-first-issue"
+  ],
+  "milestones": [
+    {
+      "title": "M0 \u2014 Repository and planning",
+      "description": "Repo standards, docs, ADRs, CI, scaffolding."
+    },
+    {
+      "title": "M1 \u2014 Nearby discovery",
+      "description": "Location inputs, provider interfaces, demo + Google Places discovery."
+    },
+    {
+      "title": "M2 \u2014 Constraint filtering",
+      "description": "Hard constraints and preliminary scoring."
+    },
+    {
+      "title": "M3 \u2014 Real travel times",
+      "description": "Routing provider selection and route-time lookup."
+    },
+    {
+      "title": "M4 \u2014 Weather awareness",
+      "description": "Open-Meteo adapter and weather-suitability rules."
+    },
+    {
+      "title": "M5 \u2014 Three-plan generation",
+      "description": "Final scoring and diversity selection."
+    },
+    {
+      "title": "M6 \u2014 MVP interface and release hardening",
+      "description": "UI, states, a11y, security, Docker, E2E."
+    },
+    {
+      "title": "M7 \u2014 Scheduled events",
+      "description": "Ticketmaster events (post-MVP)."
+    },
+    {
+      "title": "M8 \u2014 Lightweight personalization",
+      "description": "Preference feedback (post-MVP)."
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "title": "Establish repository standards and project documentation",
+      "milestone": "M0",
+      "size": "M",
+      "area": "Documentation",
+      "release": "MVP",
+      "labels": [
+        "type:documentation",
+        "area:documentation",
+        "priority:p0"
+      ],
+      "outcome": "A contributor can understand the project, conventions, and how to work in it from the repo alone.",
+      "scope": "README, CONTRIBUTING, SECURITY, PRD, architecture docs (system-overview, provider-strategy, scoring-and-filtering), runbooks, ADR template, issue/PR templates, CI workflow, codeowners, license.",
+      "non_goals": "Application code; provider implementations.",
+      "acceptance": [
+        "README explains stack, quick start (demo mode), and doc map.",
+        "CONTRIBUTING covers branch/PR/commit rules.",
+        "SECURITY covers secrets + location privacy.",
+        "All required docs exist under docs/.",
+        "CI workflow present (validates after scaffold)."
+      ],
+      "tests": [
+        "Docs build/lint if any.",
+        "CI config parses (yaml valid)."
+      ],
+      "dependencies": [],
+      "docs": [
+        "README.md",
+        "CONTRIBUTING.md",
+        "SECURITY.md",
+        "docs/product/PRD.md",
+        "docs/architecture/system-overview.md",
+        "docs/architecture/provider-strategy.md",
+        "docs/architecture/scoring-and-filtering.md",
+        "docs/runbooks/local-development.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 2,
+      "title": "Scaffold SvelteKit application and development tooling",
+      "milestone": "M0",
+      "size": "L",
+      "area": "Infrastructure",
+      "release": "MVP",
+      "labels": [
+        "type:infrastructure",
+        "area:infrastructure",
+        "priority:p0"
+      ],
+      "outcome": "A runnable SvelteKit + Svelte 5 + TS strict skeleton exists with the required source layout.",
+      "scope": "Create the SvelteKit project (Svelte 5, TS strict), the source layout (lib/{components,domain,engine,providers,server,stores,utilities}, routes, routes/api, tests), package manager config, and base config files.",
+      "non_goals": "Feature implementation; provider logic; UI screens.",
+      "acceptance": [
+        "App builds and runs in dev.",
+        "Source layout matches the ADR/spec.",
+        "package-lock.json committed and pinned.",
+        "Strict TS enabled."
+      ],
+      "tests": [
+        "Smoke: dev server boots.",
+        "Build succeeds."
+      ],
+      "dependencies": [
+        1
+      ],
+      "docs": [
+        "README.md",
+        "docs/architecture/system-overview.md"
+      ],
+      "sub_issues": [
+        {
+          "title": "Scaffold base SvelteKit project and config",
+          "size": "M"
+        },
+        {
+          "title": "Create source layout and base route shells",
+          "size": "S"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Configure linting, formatting, type checking, unit tests, and browser smoke tests",
+      "milestone": "M0",
+      "size": "L",
+      "area": "Infrastructure",
+      "release": "MVP",
+      "labels": [
+        "type:infrastructure",
+        "area:testing",
+        "priority:p0"
+      ],
+      "outcome": "All quality gates are configured and run locally and in CI.",
+      "scope": "Prettier, ESLint (Svelte), svelte-check (types), Vitest (unit+integration), Playwright (smoke), and npm scripts for each.",
+      "non_goals": "Provider implementations; scoring logic.",
+      "acceptance": [
+        "`npm run lint/check/test/format/build` all wired.",
+        "Playwright config present with one trivial smoke test.",
+        "CI calls these gates."
+      ],
+      "tests": [
+        "Vitest sample test passes.",
+        "Playwright smoke passes locally."
+      ],
+      "dependencies": [
+        2
+      ],
+      "docs": [
+        "docs/runbooks/local-development.md",
+        ".github/workflows/ci.yml"
+      ],
+      "sub_issues": [
+        {
+          "title": "Prettier + ESLint + svelte-check config",
+          "size": "S"
+        },
+        {
+          "title": "Vitest config + sample test",
+          "size": "S"
+        },
+        {
+          "title": "Playwright config + smoke test",
+          "size": "S"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Configure GitHub Actions CI",
+      "milestone": "M0",
+      "size": "M",
+      "area": "Infrastructure",
+      "release": "MVP",
+      "labels": [
+        "type:infrastructure",
+        "area:infrastructure",
+        "priority:p1"
+      ],
+      "outcome": "Every push/PR runs install, format, lint, type check, unit/integration, build, Playwright, and a secret scan.",
+      "scope": "CI workflow using the committed lockfile, with caching that does not affect correctness, plus a basic secret-scan step and dependency review where supported.",
+      "non_goals": "Branch protection rules (separate, permissions permitting).",
+      "acceptance": [
+        "CI runs on push to main and PRs.",
+        "All required jobs present.",
+        "Demo mode (no secrets) passes."
+      ],
+      "tests": [
+        "CI green on this branch."
+      ],
+      "dependencies": [
+        3
+      ],
+      "docs": [
+        ".github/workflows/ci.yml",
+        "SECURITY.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 5,
+      "title": "Define normalized domain models",
+      "milestone": "M0",
+      "size": "M",
+      "area": "Domain",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:domain",
+        "priority:p1"
+      ],
+      "outcome": "All normalized domain types exist and are the single source of truth across layers.",
+      "scope": "Define types: Coordinates, SearchConfiguration, Candidate, PlaceCandidate, EventCandidate, CostEstimate, OpeningWindow, WeatherWindow, TravelEstimate, Plan, PlanStop, PlanGenerationResult, ProviderError, DataConfidence.",
+      "non_goals": "Provider response types (those stay in adapters).",
+      "acceptance": [
+        "All listed types defined with Zod or TS types.",
+        "No provider fields leak into domain types."
+      ],
+      "tests": [
+        "Type-level tests / fixtures parse into domain types."
+      ],
+      "dependencies": [
+        2
+      ],
+      "docs": [
+        "docs/architecture/system-overview.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 6,
+      "title": "Define and validate the search-configuration schema",
+      "milestone": "M0",
+      "size": "M",
+      "area": "Domain",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:domain",
+        "priority:p1"
+      ],
+      "outcome": "User input is validated at the boundary before any pipeline work.",
+      "scope": "Zod schema for SearchConfiguration (location inputs, time, max travel, mode, budget, indoor/outdoor, energy, categories, party size) with sane defaults and clear errors.",
+      "non_goals": "Pipeline execution; provider calls.",
+      "acceptance": [
+        "Invalid input is rejected with field-level errors.",
+        "Valid input normalizes to domain type."
+      ],
+      "tests": [
+        "Unit tests for valid + invalid configs."
+      ],
+      "dependencies": [
+        5
+      ],
+      "docs": [
+        "docs/architecture/system-overview.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 7,
+      "title": "Implement current-location acquisition",
+      "milestone": "M1",
+      "size": "S",
+      "area": "Frontend",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:frontend",
+        "priority:p1"
+      ],
+      "outcome": "A user can grant browser location to seed the origin.",
+      "scope": "Geolocation button with explicit user action, explanation, timeout, and permission-denied handling; produces Coordinates.",
+      "non_goals": "Storing coordinates; manual entry.",
+      "acceptance": [
+        "Location requested only after click.",
+        "Permission-denied yields a handled state, not a crash."
+      ],
+      "tests": [
+        "Unit test the resolver wrapper with a mock geolocation."
+      ],
+      "dependencies": [
+        6
+      ],
+      "docs": [
+        "docs/runbooks/local-development.md",
+        "SECURITY.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 8,
+      "title": "Implement manually entered location",
+      "milestone": "M1",
+      "size": "S",
+      "area": "Frontend",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:frontend",
+        "priority:p1"
+      ],
+      "outcome": "A user can type a city/neighborhood/address without granting browser permission.",
+      "scope": "Text input + geocode via GeocodingProvider; show resolved coordinates/label; allow correction.",
+      "non_goals": "Map-point selection; live Google dependency in demo mode (fixture used).",
+      "acceptance": [
+        "Typed location resolves to Coordinates or clear error.",
+        "Works with no browser permission."
+      ],
+      "tests": [
+        "Unit test geocode->Coordinates with fixture provider."
+      ],
+      "dependencies": [
+        6,
+        10,
+        11
+      ],
+      "docs": [
+        "docs/architecture/provider-strategy.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 9,
+      "title": "Implement map-point location selection",
+      "milestone": "M1",
+      "size": "M",
+      "area": "Frontend",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:frontend",
+        "priority:p2"
+      ],
+      "outcome": "A user can drop a pin on a map to set the origin.",
+      "scope": "Embedded map, click-to-set Coordinates, reverse-geocode label via GeocodingProvider; optional.",
+      "non_goals": "Full mapping UX; routing visualization.",
+      "acceptance": [
+        "Clicking the map sets Coordinates.",
+        "Reverse-geocode label displayed when available."
+      ],
+      "tests": [
+        "Unit test coordinate extraction; component test for click."
+      ],
+      "dependencies": [
+        6,
+        10,
+        11
+      ],
+      "docs": [
+        "docs/architecture/provider-strategy.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 10,
+      "title": "Define provider interfaces",
+      "milestone": "M1",
+      "size": "M",
+      "area": "Providers",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:providers",
+        "priority:p1",
+        "provider:google"
+      ],
+      "outcome": "Stable contracts exist so adapters are swappable and the engine depends only on interfaces.",
+      "scope": "Interfaces: GeocodingProvider, PlacesProvider, EventsProvider, WeatherProvider, RoutingProvider, each with typed inputs/outputs and ProviderError.",
+      "non_goals": "Live adapter implementations; UI.",
+      "acceptance": [
+        "Interfaces compile and are imported by the engine, not concrete adapters."
+      ],
+      "tests": [
+        "Mock adapters satisfy interfaces in tests."
+      ],
+      "dependencies": [
+        5
+      ],
+      "docs": [
+        "docs/architecture/system-overview.md",
+        "docs/architecture/provider-strategy.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 11,
+      "title": "Implement deterministic demo providers",
+      "milestone": "M1",
+      "size": "L",
+      "area": "Providers",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:providers",
+        "priority:p1"
+      ],
+      "outcome": "The app runs end-to-end with zero credentials using fixtures.",
+      "scope": "Fixture implementations of all five provider interfaces with saved sample data and deterministic outputs; selection by config when no keys present.",
+      "non_goals": "Live API calls; real geocoding.",
+      "acceptance": [
+        "Demo mode returns stable fixture results.",
+        "Engine produces 3 plans in demo mode."
+      ],
+      "tests": [
+        "Unit tests per fixture adapter against saved fixtures."
+      ],
+      "dependencies": [
+        10
+      ],
+      "docs": [
+        "docs/adr/0006-no-database-demo-mode.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 12,
+      "title": "Implement Google Places nearby search",
+      "milestone": "M1",
+      "size": "M",
+      "area": "Providers",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:providers",
+        "priority:p1",
+        "provider:google"
+      ],
+      "outcome": "Live nearby search returns normalized candidates when a key is configured.",
+      "scope": "Live adapter for Places (New) Nearby Search; boundary Zod validation; typed errors; timeout + limited retries; normalization to Candidate.",
+      "non_goals": "Place details (separate issue); opening windows.",
+      "acceptance": [
+        "Live adapter validates response at boundary.",
+        "Errors mapped to ProviderError.",
+        "No provider types leak."
+      ],
+      "tests": [
+        "Tests use saved fixture responses (no live calls).",
+        "Verify current field names from official docs at build."
+      ],
+      "dependencies": [
+        10
+      ],
+      "docs": [
+        "docs/architecture/provider-strategy.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 13,
+      "title": "Implement Place details and opening-window normalization",
+      "milestone": "M1",
+      "size": "M",
+      "area": "Providers",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:providers",
+        "priority:p1",
+        "provider:google"
+      ],
+      "outcome": "We can enrich a candidate with hours, rating, price level, and geometry.",
+      "scope": "Place Details (New) adapter; compute OpeningWindow (next open/close) from periods; boundary validation; typed errors.",
+      "non_goals": "Routing; weather.",
+      "acceptance": [
+        "OpeningWindow computed correctly for open/closed/24h cases.",
+        "Missing hours handled as low confidence, not crash."
+      ],
+      "tests": [
+        "Unit tests for opening-window math across cases."
+      ],
+      "dependencies": [
+        12
+      ],
+      "docs": [
+        "docs/architecture/provider-strategy.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 14,
+      "title": "Candidate normalization and deduplication",
+      "milestone": "M1",
+      "size": "M",
+      "area": "Engine",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:engine",
+        "priority:p1"
+      ],
+      "outcome": "Raw candidates become a clean, deduplicated set of normalized Candidates.",
+      "scope": "Normalize place/event candidates into a common shape; dedupe by id/geo proximity; preserve source confidence.",
+      "non_goals": "Scoring; routing.",
+      "acceptance": [
+        "Duplicates removed.",
+        "All candidates conform to domain type."
+      ],
+      "tests": [
+        "Unit tests for dedupe and normalization."
+      ],
+      "dependencies": [
+        5,
+        12,
+        13
+      ],
+      "docs": [
+        "docs/architecture/system-overview.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 15,
+      "title": "Implement hard-constraint filtering",
+      "milestone": "M2",
+      "size": "L",
+      "area": "Engine",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:engine",
+        "priority:p0"
+      ],
+      "outcome": "Candidates that cannot yield an actionable plan are rejected before ranking.",
+      "scope": "Implement all hard constraints (closed before arrival, closes before finish, event window, total time, min cost > budget, one-way travel > max, weather unreasonable, missing required data) as pure functions returning rejection reasons.",
+      "non_goals": "Travel-time constraint (needs routing, M3); final scoring.",
+      "acceptance": [
+        "Each constraint has a unit test including boundary cases.",
+        "Rejections carry explicit reasons."
+      ],
+      "tests": [
+        "Unit tests per constraint + combinations."
+      ],
+      "dependencies": [
+        14
+      ],
+      "docs": [
+        "docs/architecture/scoring-and-filtering.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 16,
+      "title": "Implement preliminary scoring",
+      "milestone": "M2",
+      "size": "M",
+      "area": "Engine",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:engine",
+        "priority:p1"
+      ],
+      "outcome": "A cheap score ranks candidates so only the strongest ~12 are routed.",
+      "scope": "Preliminary score from preference/category/energy match, rating/review confidence, novelty, weather suitability, open-now confidence, cost confidence, minus missing-data and duplicate-category penalties.",
+      "non_goals": "Travel-time penalty (final score); diversity selection.",
+      "acceptance": [
+        "Preliminary score isolates top candidates deterministically.",
+        "Rating cannot dominate."
+      ],
+      "tests": [
+        "Unit tests asserting weight effects and determinism."
+      ],
+      "dependencies": [
+        14,
+        20
+      ],
+      "docs": [
+        "docs/architecture/scoring-and-filtering.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 17,
+      "title": "Select and document the routing provider",
+      "milestone": "M3",
+      "size": "S",
+      "area": "Providers",
+      "release": "MVP",
+      "labels": [
+        "type:documentation",
+        "area:providers",
+        "priority:p1",
+        "provider:google"
+      ],
+      "outcome": "The routing provider choice is finalized and recorded.",
+      "scope": "Write ADR-0004 selecting Google Routes over Mapbox; confirm interface coverage for all travel modes.",
+      "non_goals": "Implementing the adapter (issue #18).",
+      "acceptance": [
+        "ADR accepted and referenced.",
+        "Interface supports drive/walk/bike/transit."
+      ],
+      "tests": [
+        "ADR review sign-off."
+      ],
+      "dependencies": [
+        10
+      ],
+      "docs": [
+        "docs/adr/0004-routing-provider-google-routes.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 18,
+      "title": "Implement route-time lookup for shortlisted candidates",
+      "milestone": "M3",
+      "size": "M",
+      "area": "Providers",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:providers",
+        "priority:p1",
+        "provider:google"
+      ],
+      "outcome": "Shortlisted candidates get real travel estimates.",
+      "scope": "Google Routes adapter for the top ~12 candidates; boundary validation; timeout + limited retries; TravelEstimate per mode; fixture counterpart.",
+      "non_goals": "Constraint application of travel time (engine).",
+      "acceptance": [
+        "TravelEstimate produced for each mode.",
+        "Errors mapped; fixture path deterministic."
+      ],
+      "tests": [
+        "Tests use saved fixture routes (no live calls)."
+      ],
+      "dependencies": [
+        17,
+        11
+      ],
+      "docs": [
+        "docs/architecture/provider-strategy.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 19,
+      "title": "Implement Open-Meteo weather adapter",
+      "milestone": "M4",
+      "size": "M",
+      "area": "Providers",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:providers",
+        "priority:p1",
+        "provider:open-meteo"
+      ],
+      "outcome": "Weather windows are available for eligibility and ranking with no API key.",
+      "scope": "Open-Meteo adapter (keyless) returning WeatherWindow; boundary validation of fields/units; typed errors; timeout; fixture counterpart.",
+      "non_goals": "Weather-suitability rules (issue #20).",
+      "acceptance": [
+        "WeatherWindow produced and validated.",
+        "Fixture path deterministic."
+      ],
+      "tests": [
+        "Tests use saved fixture forecasts; verify field/unit shape at build."
+      ],
+      "dependencies": [
+        10,
+        11
+      ],
+      "docs": [
+        "docs/architecture/provider-strategy.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 20,
+      "title": "Implement deterministic weather-suitability rules",
+      "milestone": "M4",
+      "size": "M",
+      "area": "Engine",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:engine",
+        "priority:p1"
+      ],
+      "outcome": "Weather affects eligibility and ranking, not just display.",
+      "scope": "Pure functions: heavy rain rejects unsheltered outdoor; high heat penalizes exposed midday; strong wind penalizes overlooks/waterfronts/cycling; good conditions boost parks/trails/walks/markets.",
+      "non_goals": "Detailed microclimate modeling.",
+      "acceptance": [
+        "Each rule has unit tests with clear pass/reject/penalty outcomes."
+      ],
+      "tests": [
+        "Unit tests per rule + combinations."
+      ],
+      "dependencies": [
+        19
+      ],
+      "docs": [
+        "docs/architecture/scoring-and-filtering.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 21,
+      "title": "Implement final candidate scoring",
+      "milestone": "M4",
+      "size": "M",
+      "area": "Engine",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:engine",
+        "priority:p1"
+      ],
+      "outcome": "A transparent final score combines all signals after routing/weather/budget.",
+      "scope": "Final score with documented positive/negative weights; travel-time, budget risk, schedule risk, missing-data, duplicate-category, low-confidence penalties; returns score components.",
+      "non_goals": "Diversity selection (issue #22).",
+      "acceptance": [
+        "Weights documented and unit-tested.",
+        "Score components returned in dev mode.",
+        "Rating cannot dominate."
+      ],
+      "tests": [
+        "Unit tests asserting component contributions and determinism."
+      ],
+      "dependencies": [
+        16,
+        18,
+        20
+      ],
+      "docs": [
+        "docs/architecture/scoring-and-filtering.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 22,
+      "title": "Implement three-plan diversity selection",
+      "milestone": "M5",
+      "size": "L",
+      "area": "Engine",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:engine",
+        "priority:p0"
+      ],
+      "outcome": "Exactly three diverse plans are produced, or an explicit insufficiency result.",
+      "scope": "Selection roles: best overall, lowest-cost/friction, highest-novelty; category/experience diversity rules; structured insufficiency when <3 viable; never invent places.",
+      "non_goals": "Multi-stop plans (later).",
+      "acceptance": [
+        "Three distinct plans when viable exist.",
+        "Diversity rules prevent near-duplicates.",
+        "Insufficiency result when <3."
+      ],
+      "tests": [
+        "Unit tests for diversity, ties, and insufficiency."
+      ],
+      "dependencies": [
+        15,
+        21
+      ],
+      "docs": [
+        "docs/architecture/scoring-and-filtering.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 23,
+      "title": "Build the search-form interface",
+      "milestone": "M6",
+      "size": "L",
+      "area": "Frontend",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:frontend",
+        "priority:p1"
+      ],
+      "outcome": "Users can enter all required inputs through an accessible form.",
+      "scope": "Form for location (3 modes), time, max travel, mode, budget, indoor/outdoor, energy, categories, party size; client validation; a11y.",
+      "non_goals": "Results UI (issue #24).",
+      "acceptance": [
+        "All inputs collected and validated.",
+        "Keyboard + screen-reader accessible."
+      ],
+      "tests": [
+        "Component tests for validation and a11y."
+      ],
+      "dependencies": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "docs": [
+        "docs/runbooks/local-development.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 24,
+      "title": "Build the plan-results interface",
+      "milestone": "M6",
+      "size": "L",
+      "area": "Frontend",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:frontend",
+        "priority:p1"
+      ],
+      "outcome": "The three plans are presented with all required fields and reasons.",
+      "scope": "Results view rendering each plan's fields, reasons, warnings, confidence; navigable to map links.",
+      "non_goals": "Multi-stop display.",
+      "acceptance": [
+        "All required plan fields render.",
+        "Reasons/warnings visible."
+      ],
+      "tests": [
+        "Component tests for rendering + a11y."
+      ],
+      "dependencies": [
+        22,
+        25
+      ],
+      "docs": [
+        "docs/architecture/system-overview.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 25,
+      "title": "Add map-navigation links",
+      "milestone": "M6",
+      "size": "S",
+      "area": "Frontend",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:frontend",
+        "priority:p2"
+      ],
+      "outcome": "Each plan offers a navigation action to the destination.",
+      "scope": "Generate provider-agnostic navigation deep links (e.g., geo: / maps URL) from destination Coordinates; open in maps app.",
+      "non_goals": "In-app map rendering of the route.",
+      "acceptance": [
+        "Navigation link uses destination coordinates only.",
+        "No secrets in URL."
+      ],
+      "tests": [
+        "Unit test link construction."
+      ],
+      "dependencies": [
+        24
+      ],
+      "docs": [
+        "SECURITY.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 26,
+      "title": "Implement empty, partial, error, permission-denied, and degraded-provider states",
+      "milestone": "M6",
+      "size": "M",
+      "area": "Frontend",
+      "release": "MVP",
+      "labels": [
+        "type:feature",
+        "area:frontend",
+        "priority:p1"
+      ],
+      "outcome": "The app degrades gracefully across all failure and partial-data states.",
+      "scope": "States: no results, partial provider failure, hard error, geolocation denied, degraded provider (e.g., weather unavailable). Each shows clear messaging and next action.",
+      "non_goals": "Retries UI beyond adapter-level.",
+      "acceptance": [
+        "Each state has a defined UI and copy.",
+        "No crash on partial failure."
+      ],
+      "tests": [
+        "Component tests per state."
+      ],
+      "dependencies": [
+        11,
+        22,
+        24
+      ],
+      "docs": [
+        "docs/architecture/system-overview.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 27,
+      "title": "Add accessibility verification",
+      "milestone": "M6",
+      "size": "M",
+      "area": "Frontend",
+      "release": "MVP",
+      "labels": [
+        "type:test",
+        "area:frontend",
+        "priority:p2"
+      ],
+      "outcome": "The MVP meets baseline accessibility standards.",
+      "scope": "Keyboard nav, focus management, ARIA roles/labels, color contrast, reduced-motion; verify with automated + manual checks.",
+      "non_goals": "Full WCAG audit.",
+      "acceptance": [
+        "Automated a11y checks pass on key screens.",
+        "Manual keyboard pass."
+      ],
+      "tests": [
+        "Playwright a11y smoke tests."
+      ],
+      "dependencies": [
+        23,
+        24
+      ],
+      "docs": [
+        "docs/runbooks/local-development.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 28,
+      "title": "Add privacy and security review",
+      "milestone": "M6",
+      "size": "M",
+      "area": "Security",
+      "release": "MVP",
+      "labels": [
+        "type:test",
+        "area:security",
+        "priority:p1"
+      ],
+      "outcome": "The MVP meets the stated privacy and security bar before release.",
+      "scope": "Review: server-only keys, no client exposure, location privacy (explicit grant, manual option, no persistence), no committed secrets, provider responses validated.",
+      "non_goals": "Formal penetration test.",
+      "acceptance": [
+        "No key reaches the client bundle.",
+        "Location handling matches SECURITY.md."
+      ],
+      "tests": [
+        "CI secret scan green.",
+        "Manual review checklist signed off."
+      ],
+      "dependencies": [
+        4,
+        7,
+        8,
+        25
+      ],
+      "docs": [
+        "SECURITY.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 29,
+      "title": "Add Docker deployment",
+      "milestone": "M6",
+      "size": "M",
+      "area": "Infrastructure",
+      "release": "MVP",
+      "labels": [
+        "type:infrastructure",
+        "area:infrastructure",
+        "priority:p2"
+      ],
+      "outcome": "The app builds and runs as a container for deployment.",
+      "scope": "Dockerfile (node:22-alpine, SvelteKit Node adapter), .dockerignore, run instructions; HTTPS noted as deploy concern.",
+      "non_goals": "Orchestration, ingress, secrets management (env at runtime).",
+      "acceptance": [
+        "Image builds and serves the app.",
+        "No secrets baked in."
+      ],
+      "tests": [
+        "Build the image in CI or locally; smoke curl."
+      ],
+      "dependencies": [
+        2
+      ],
+      "docs": [
+        "docs/runbooks/local-development.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 30,
+      "title": "Perform MVP end-to-end acceptance testing",
+      "milestone": "M6",
+      "size": "L",
+      "area": "Testing",
+      "release": "MVP",
+      "labels": [
+        "type:test",
+        "area:testing",
+        "priority:p0"
+      ],
+      "outcome": "The full pipeline is verified end-to-end in demo and (optionally) live mode.",
+      "scope": "End-to-end scenario: input -> 3 plans; plus degraded/empty/insufficiency paths; Playwright smoke; demo-mode CI.",
+      "non_goals": "Load/performance testing.",
+      "acceptance": [
+        "E2E demo scenario passes.",
+        "Insufficiency path verified.",
+        "CI green in demo mode."
+      ],
+      "tests": [
+        "Playwright E2E covering core flow + edge states."
+      ],
+      "dependencies": [
+        22,
+        26,
+        27,
+        28,
+        29
+      ],
+      "docs": [
+        "docs/runbooks/local-development.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 31,
+      "title": "Add Ticketmaster events as post-MVP work",
+      "milestone": "M7",
+      "size": "L",
+      "area": "Providers",
+      "release": "Post-MVP",
+      "labels": [
+        "type:feature",
+        "area:providers",
+        "priority:p3",
+        "provider:ticketmaster"
+      ],
+      "outcome": "Events become a candidate source alongside places.",
+      "scope": "Ticketmaster adapter behind EventsProvider; normalization to EventCandidate; boundary validation; fixture counterpart; integrate into pipeline after MVP.",
+      "non_goals": "Ticketing/purchase; auth.",
+      "acceptance": [
+        "Event candidates normalize and dedupe with places.",
+        "Fixture path deterministic."
+      ],
+      "tests": [
+        "Tests use saved fixture events (no live calls)."
+      ],
+      "dependencies": [
+        10,
+        11,
+        14
+      ],
+      "docs": [
+        "docs/architecture/provider-strategy.md"
+      ],
+      "sub_issues": []
+    },
+    {
+      "number": 32,
+      "title": "Add lightweight preference feedback as post-MVP work",
+      "milestone": "M8",
+      "size": "M",
+      "area": "Frontend",
+      "release": "Post-MVP",
+      "labels": [
+        "type:feature",
+        "area:frontend",
+        "priority:p3"
+      ],
+      "outcome": "The app can learn mild preferences from plan choices (no accounts).",
+      "scope": "Optional client-side preference signal (e.g., chosen category/energy) fed back into scoring weights; no persistence beyond session unless specified.",
+      "non_goals": "Accounts; cloud sync; full personalization.",
+      "acceptance": [
+        "Preference signal influences subsequent scores.",
+        "No secrets; respects privacy."
+      ],
+      "tests": [
+        "Unit tests for feedback->weight effect."
+      ],
+      "dependencies": [
+        21
+      ],
+      "docs": [
+        "docs/architecture/scoring-and-filtering.md"
+      ],
+      "sub_issues": []
+    }
+  ]
+}
